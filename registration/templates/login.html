@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block styles %}
+        <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
+
+{% endblock %}
+{% block content %}
+</div>
+  <div class="blank-form blank-form--sm">
+    <form method="post" class="mt-40">
+      {% csrf_token %}
+      <label for="select-cert" class="label">Выберите сертификат</label>
+      <select name="" id="select-cert" class="form-control select">
+        <option disabled selected>Сертификат не выбран</option>
+      </select>
+      <div class="mt-8">{{ form }}</div>
+      <footer class="mt-40">
+        <button type="submit" class="button button--primary mr-16" value="Войти">Войти</button>
+        <a href="{% url 'registration:register' %}" class="button button--secondary">Получить доступ</a>
+      </footer>
+    </form>
+  </div>
+{% endblock %}
