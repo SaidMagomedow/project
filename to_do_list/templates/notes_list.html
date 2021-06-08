@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="TODOCreate">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#TODOCreateForm" aria-expanded="true" aria-controls="collapseOne">
+          Добавить заметку
+        </button>
+      </h5>
+    </div>
+
+    <div id="TODOCreateForm" class="collapse show" aria-labelledby="headingOne" data-parent="#TODOCreate">
+      <div class="card-body">
+        <form method="post" action="{% url 'to_do_list:note-create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+        <div class="col-md-2">
+              <button type="submit" class="btn btn-primary">
+                  Добавить
+              </button>
+          </div></form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% for note in notes %}
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          {{ note.title }}
+        </button>
+         <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
+             {% csrf_token %}
+             <button type="submit">Удалить</button>
+         </form>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+          {{ note.description }}
+          {{ form_update.as_p }}
+          {% csrf_token %}
+             <button type="submit">Вып</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

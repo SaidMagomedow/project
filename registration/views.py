@@ -9,23 +9,10 @@ from django.views.generic import FormView, CreateView
 from django.contrib.auth.forms import AuthenticationForm
 
 
-class RegistredView(FormView):
-    template_name = 'registration.html'
+class RegistredView(CreateView):
+    template_name = 'signup.html'
     form_class = UserCreationForm
 
-    def form_valid(self, form):
-        create = form.save()
-        if create is not None:
-            login(self.request, create)
-        return super(RegistredView, self).form_valid(form)
-
     def get_success_url(self):
-        return reverse_lazy('to_do_list:main')
+        return reverse_lazy('to_do_list:note-list')
 
-
-class SomeLoginView(LoginView):
-    template_name = 'login.html'
-    form_class = AuthenticationForm
-
-    def get_success_url(self):
-        return reverse_lazy('to_do_list:main')

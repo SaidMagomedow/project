@@ -2,9 +2,12 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
+from django.urls import reverse
 
 
 class Notes(models.Model):
+
+
     title = models.CharField(max_length=255)
     complete = models.BooleanField(default=False)
     description = models.TextField(null=True, blank=True)
@@ -18,3 +21,6 @@ class Notes(models.Model):
     class Meta:
         verbose_name = 'Заметка'
         verbose_name_plural = 'Заметки'
+
+    def get_absolute_url(self):
+        return reverse('to_do_list:note-detail', kwargs={'pk': self.pk})
