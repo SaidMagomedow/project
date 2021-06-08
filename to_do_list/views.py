@@ -9,7 +9,7 @@ from to_do_list.forms import NoteCreateForm, NoteUpdateForm
 from to_do_list.models import Notes
 
 
-class NoteListView(LoginRequiredMixin, ListView):
+class NoteListView(ListView):
     model = Notes
     template_name = 'notes_list.html'
 
@@ -34,6 +34,6 @@ class NoteUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('to_do_list:note-list')
 
 
-class NoteDeleteView(DeleteView):
+class NoteDeleteView(LoginRequiredMixin, DeleteView):
     model = Notes
     success_url = reverse_lazy('to_do_list:note-list')

@@ -7,9 +7,21 @@ from django.urls import reverse
 
 class Notes(models.Model):
 
+    STATUS_CHOISES = {
+        (COMPLETE := 'COMPLETE', 'Готово'),
+        (IN_PROGRESS := 'IN_PROGRESS', 'Выполняется'),
+        (POSTPONED := 'POSTPONED', 'Отложено')
+    }
+
+    PRIORITY_CHOISES = {
+        (FIRST := 'UN_IMPORTANT', 'Неважный'),
+        (SECOND := 'IMPORTANT', 'Важный'),
+        (THIRD := 'VERY_IMPORTANT', 'Очень важный')
+    }
 
     title = models.CharField(max_length=255)
-    complete = models.BooleanField(default=False)
+    complete = models.CharField(max_length=25, default=IN_PROGRESS, choices=STATUS_CHOISES)
+    priority = models.CharField(max_length=25, default=SECOND, choices=PRIORITY_CHOISES)
     description = models.TextField(null=True, blank=True)
     data_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
@@ -21,6 +33,3 @@ class Notes(models.Model):
     class Meta:
         verbose_name = 'Заметка'
         verbose_name_plural = 'Заметки'
-
-    def get_absolute_url(self):
-        return reverse('to_do_list:note-detail', kwargs={'pk': self.pk})

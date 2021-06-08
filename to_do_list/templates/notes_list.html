@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+<nav class="navbar navbar-light bg-light">
+  <form class="form-inline">
+    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+  </form>
+</nav>
 <div id="TODOCreate">
   <div class="card">
     <div class="card-header" id="headingOne">
@@ -10,7 +16,7 @@
       </h5>
     </div>
 
-    <div id="TODOCreateForm" class="collapse show" aria-labelledby="headingOne" data-parent="#TODOCreate">
+    <div id="TODOCreateForm" class="collapse" aria-labelledby="headingOne" data-parent="#TODOCreate">
       <div class="card-body">
         <form method="post" action="{% url 'to_do_list:note-create' %}">
             {% csrf_token %}
@@ -30,23 +36,36 @@
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne{{ note.pk }}" aria-expanded="true" aria-controls="collapseOne">
           {{ note.title }}
-        </button>
-         <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
+            <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
              {% csrf_token %}
-             <button type="submit">Удалить</button>
+             <button type="submit" class="btn btn-danger">Удалить</button>
          </form>
+            <button type="button" class="btn btn-dark" data-toggle="collapse" id="update" data-target="#formupdate{{ note.pk }}" aria-controls="formupdate">Изменить</button>
+        </button>
+
       </h5>
     </div>
 
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-      <div class="card-body">
-          {{ note.description }}
-          {{ form_update.as_p }}
-          {% csrf_token %}
-             <button type="submit">Вып</button>
-      </div>
+    <div id="collapseOne{{ note.pk }}" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card">
+              <div class="alert alert-success">
+              Описание :{{ note.description }}
+              </div ><div class="alert alert-success">
+              Статус :{{ note.complete }}
+              </div><div class="alert alert-success">
+              Приоритет :{{ note.priority }}
+              </div>
+              <div id="formupdate{{ note.pk }}" aria-labelledby="headingOne" class="collapse" data-parent="#update">
+              <form method="post" action="{% url 'to_do_list:note-update' note.pk %}">
+              {{ form_update.as_p }}
+              {% csrf_token %}
+                 <button type="submit" class="btn btn-dark">Готово</button>
+              </form>
+              </div>
+          </div>
+          </div>
     </div>
   </div>
 </div>
