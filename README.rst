@@ -24,7 +24,9 @@ Enjoy your use
     docker-compose build
 
 Поднять проект
+
     docker-compose up
+
 Выполнить миграции
 
     docker-compose run --rm to_do_web python manage.py migrate
