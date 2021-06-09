@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.db.models import Q
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.urls import reverse_lazy
@@ -15,12 +16,21 @@ class NoteListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['notes'] = Notes.objects.all()
-        if status := self.request.GET.get('priority_status'):
-            context['notes'] = Notes.objects.filter(priority=status)
-        if status := self.request.GET.get('complete_status'):
-            context['notes'] = Notes.objects.filter(complete=status)
+        priority = self.request.GET.get('priority_status')
+        complete = self.request.GET.get('complete_status')
+        context['form_create'] = NoteCreateForm()
         context['form_update'] = NoteUpdateForm()
+        user = self.request.user
+        if user.is_superuser:
+            context['notes'] = Notes.objects.all()
+            if priority or complete:
+                context['notes'] = Notes.objects.filter(
+                    Q(priority=priority) | Q(complete=complete))
+        else:
+            context['notes'] = Notes.objects.filter(user_id=user.pk)
+            if priority or complete:
+                context['notes'] = Notes.objects.filter(
+                    Q(priority=priority, user_id=user.pk) | Q(complete=complete, user_id=user.pk))
         return context
 
 
@@ -29,6 +39,12 @@ class NoteCreateView(LoginRequiredMixin, CreateView):
     model = Notes
     template_name = 'notes_list.html'
     success_url = reverse_lazy('to_do_list:note-list')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user_id = self.request.user.pk
+        self.object.save()
+        return redirect('to_do_list:note-list')
 
 
 class NoteUpdateView(LoginRequiredMixin, UpdateView):

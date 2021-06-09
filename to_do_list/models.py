@@ -21,7 +21,7 @@ class Notes(models.Model):
 
     title = models.CharField(max_length=255)
     complete = models.CharField(max_length=25, default=IN_PROGRESS, choices=STATUS_CHOISES)
-    priority = models.CharField(max_length=25, default=IMPORTANT, choices=PRIORITY_CHOISES)
+    priority = models.CharField(max_length=25, choices=PRIORITY_CHOISES)
     description = models.TextField(null=True, blank=True)
     data_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(

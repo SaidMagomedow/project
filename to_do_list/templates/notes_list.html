@@ -36,6 +36,9 @@
                     {% else %}
                         <a href="{% url 'login' %}" class="btn-light">Войти</a>
                     {% endif %}
+                    <a>
+                        {{ request.user }}
+                    </a>
                 </h5>
             </div>
 
@@ -43,7 +46,7 @@
                 <div class="card-body">
                     <form method="post" action="{% url 'to_do_list:note-create' %}">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        {{ form_create.as_p }}
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary">
                                 Добавить
@@ -55,6 +58,7 @@
             </div>
         </div>
     </div>
+    {% if user.is_authenticated %}
     {% for note in notes %}
         <div id="accordion">
             <div class="card">
@@ -62,7 +66,7 @@
                     <h5 class="mb-0">
                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne{{ note.pk }}"
                                 aria-expanded="true" aria-controls="collapseOne">
-                            {{ note.title }}
+                            {{ note.title }}{{ note.user_id }}
                             <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Удалить</button>
@@ -76,9 +80,9 @@
                      data-parent="#accordion">
                     <div class="card">
                         <div class="alert alert-success">
-                            <button type="button" class="btn btn-dark" data-toggle="collapse" id="update"
+                            <a href="{% url 'to_do_list:note-update' note.pk %}" type="button" class="btn btn-dark" data-toggle="collapse" id="update"
                                     data-target="#formupdate{{ note.pk }}" aria-controls="formupdate">Изменить
-                            </button>
+                            </a>
                         </div>
                         <div class="alert alert-success">
                             Описание :{{ note.description }}
@@ -101,6 +105,6 @@
                 </div>
             </div>
         </div>
-
     {% endfor %}
+    {% endif %}
 {% endblock %}
