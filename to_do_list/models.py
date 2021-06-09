@@ -14,14 +14,14 @@ class Notes(models.Model):
     }
 
     PRIORITY_CHOISES = {
-        (FIRST := 'UN_IMPORTANT', 'Неважный'),
-        (SECOND := 'IMPORTANT', 'Важный'),
-        (THIRD := 'VERY_IMPORTANT', 'Очень важный')
+        (UN_IMPORTANT := 'UN_IMPORTANT', 'Неважный'),
+        (IMPORTANT := 'IMPORTANT', 'Важный'),
+        (VERY_IMPORTANT := 'VERY_IMPORTANT', 'Очень важный')
     }
 
     title = models.CharField(max_length=255)
     complete = models.CharField(max_length=25, default=IN_PROGRESS, choices=STATUS_CHOISES)
-    priority = models.CharField(max_length=25, default=SECOND, choices=PRIORITY_CHOISES)
+    priority = models.CharField(max_length=25, default=IMPORTANT, choices=PRIORITY_CHOISES)
     description = models.TextField(null=True, blank=True)
     data_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
@@ -33,3 +33,4 @@ class Notes(models.Model):
     class Meta:
         verbose_name = 'Заметка'
         verbose_name_plural = 'Заметки'
+        ordering = ['-data_created']

@@ -15,8 +15,13 @@ class NoteListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['notes'] = Notes.objects.all().order_by('-data_created')
-        context['form'] = NoteCreateForm()
+        context['notes'] = Notes.objects.all()
+        if status := self.request.GET.get('priority'):
+            print(status)
+        if status := self.request.GET.get('complete_status'):
+            context['notes'] = Notes.objects.filter(complete=status)
+# context['notes'] = Notes.objects.all()
+#         context['notes'] = Notes.objects.all()
         context['form_update'] = NoteUpdateForm()
         return context
 

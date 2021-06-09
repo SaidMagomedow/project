@@ -1,85 +1,106 @@
 {% extends 'base.html' %}
 {% block content %}
-<nav class="navbar navbar-light bg-light">
-  <form class="form-inline">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-  </form>
-<form class="form-inline">
-  <select class="custom-select" id="inputGroupSelect04">
-    <option selected>Choose...</option>
-    <option value="1">One</option>
-    <option value="2">Two</option>
-    <option value="3">Three</option>
-  </select>
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary" type="submit">Button</button>
-  </div>
+    <nav class="navbar navbar-light bg-light">
+        <form class="form-inline" method="get" action="{% url 'to_do_list:note-list' %}">
+            <select class="custom-select" id="inputGroupSelect04" name="priority_status">
+                <option value="UN_IMPORTANT">Неважный</option>
+                <option value="IMPORTANT">Важный</option>
+                <option value="VERY_IMPORTANT">Очень важный</option>
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Поиск по приориету</button>
+            </div>
+        </form>
+        <form class="form-inline" method="get" action="{% url 'to_do_list:note-list' %}">
+            <select class="custom-select" id="inputGroupSelect04" name="complete_status">
+                <option value="COMPLETE">Готово</option>
+                <option value="IN_PROGRESS">Выполняется</option>
+                <option value="POSTPONED">Отложено</option>
+            </select>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Поиск по статусу</button>
+            </div>
 
-</form>
-</nav>
-<div id="TODOCreate">
-  <div class="card">
-    <div class="card-header" id="headingOne">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#TODOCreateForm" aria-expanded="true" aria-controls="collapseOne">
-          Добавить заметку
-        </button>
-      </h5>
+        </form>
+    </nav>
+    <div id="TODOCreate">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#TODOCreateForm"
+                            aria-expanded="true" aria-controls="collapseOne">
+                        Добавить заметку
+                    </button>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-light">Войти</a>
+                    {% endif %}
+                </h5>
+            </div>
+
+            <div id="TODOCreateForm" class="collapse" aria-labelledby="headingOne" data-parent="#TODOCreate">
+                <div class="card-body">
+                    <form method="post" action="{% url 'to_do_list:note-create' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">
+                                Добавить
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </div>
+    {% for note in notes %}
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne{{ note.pk }}"
+                                aria-expanded="true" aria-controls="collapseOne">
+                            {{ note.title }}
+                            <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                        </button>
 
-    <div id="TODOCreateForm" class="collapse" aria-labelledby="headingOne" data-parent="#TODOCreate">
-      <div class="card-body">
-        <form method="post" action="{% url 'to_do_list:note-create' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-        <div class="col-md-2">
-              <button type="submit" class="btn btn-primary">
-                  Добавить
-              </button>
-          </div></form>
+                    </h5>
+                </div>
 
-      </div>
-    </div>
-  </div>
-</div>
-{% for note in notes %}
-<div id="accordion">
-  <div class="card">
-    <div class="card-header" id="headingOne">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne{{ note.pk }}" aria-expanded="true" aria-controls="collapseOne">
-          {{ note.title }}
-            <form method="post" action="{% url 'to_do_list:note-delete' note.pk %}">
-             {% csrf_token %}
-             <button type="submit" class="btn btn-danger">Удалить</button>
-         </form>
-            <button type="button" class="btn btn-dark" data-toggle="collapse" id="update" data-target="#formupdate{{ note.pk }}" aria-controls="formupdate">Изменить</button>
-        </button>
+                <div id="collapseOne{{ note.pk }}" class="collapse" aria-labelledby="headingOne"
+                     data-parent="#accordion">
+                    <div class="card">
+                        <div class="alert alert-success">
+                            <button type="button" class="btn btn-dark" data-toggle="collapse" id="update"
+                                    data-target="#formupdate{{ note.pk }}" aria-controls="formupdate">Изменить
+                            </button>
+                        </div>
+                        <div class="alert alert-success">
+                            Описание :{{ note.description }}
+                        </div>
+                        <div class="alert alert-success">
+                            Статус :{{ note.get_complete_display }}
+                        </div>
+                        <div class="alert alert-success">
+                            Приоритет :{{ note.get_priority_display }}
+                        </div>
+                        <div id="formupdate{{ note.pk }}" aria-labelledby="headingOne" class="collapse"
+                             data-parent="#update">
+                            <form method="post" action="{% url 'to_do_list:note-update' note.pk %}">
+                                {{ form_update.as_p }}
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-dark">Готово</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      </h5>
-    </div>
-
-    <div id="collapseOne{{ note.pk }}" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-          <div class="card">
-              <div class="alert alert-success">
-              Описание :{{ note.description }}
-              </div ><div class="alert alert-success">
-              Статус :{{ note.complete }}
-              </div><div class="alert alert-success">
-              Приоритет :{{ note.priority }}
-              </div>
-              <div id="formupdate{{ note.pk }}" aria-labelledby="headingOne" class="collapse" data-parent="#update">
-              <form method="post" action="{% url 'to_do_list:note-update' note.pk %}">
-              {{ form_update.as_p }}
-              {% csrf_token %}
-                 <button type="submit" class="btn btn-dark">Готово</button>
-              </form>
-              </div>
-          </div>
-          </div>
-    </div>
-  </div>
-</div>
-{% endfor %}
+    {% endfor %}
 {% endblock %}
